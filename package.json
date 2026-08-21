@@ -1,0 +1,24 @@
+{
+  "name": "api-celular",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaoBaptistaBagvanjiNyc/API-Celular.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JoaoBaptistaBagvanjiNyc/API-Celular/issues"
+  },
+  "homepage": "https://github.com/JoaoBaptistaBagvanjiNyc/API-Celular#readme"
+}
