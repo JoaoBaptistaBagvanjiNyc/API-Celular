@@ -88,6 +88,66 @@ app.post('/validar-cpf', (req, res) => {
   });
 });
 
+// ======================================================
+// ETAPA 4: Validar e Formatar Data de Nascimento (AAAA-MM-DD)
+// ======================================================
+app.post('/validar-data-nascimento', (req, res) => {
+  const { dataNascimento } = req.body;
+
+  if (!dataNascimento) {
+    return res.status(400).json({ valido: false, erro: 'Informe a data de nascimento.' });
+  }
+
+  // Apenas os números digitados
+  const apenasNumeros = dataNascimento.toString().replace(/\D/g, '');
+
+  if (apenasNumeros.length !== 8) {
+    return res.status(400).json({
+      valido: false,
+      erro: 'Data inválida. Envie com dia, mês e ano completo (ex: 03/05/1990).'
+    });
+  }
+
+  let dia, mes, ano;
+
+  // Identifica se a pessoa enviou no padrão AAAA-MM-DD ou DD-MM-AAAA
+  if (dataNascimento.toString().trim().startsWith('19') || dataNascimento.toString().trim().startsWith('20')) {
+    // Formato tipo AAAA/MM/DD
+    ano = apenasNumeros.substring(0, 4);
+    mes = apenasNumeros.substring(4, 6);
+    dia = apenasNumeros.substring(6, 8);
+  } else {
+    // Formato BR clássico: DD/MM/AAAA
+    dia = apenasNumeros.substring(0, 2);
+    mes = apenasNumeros.substring(2, 4);
+    ano = apenasNumeros.substring(4, 8);
+  }
+
+  // Validação real da data (se dia/mês/ano existem)
+  const dataObjeto = new Date(`${ano}-${mes}-${dia}T00:00:00`);
+  const anoAtual = new Date().getFullYear();
+
+  if (
+    isNaN(dataObjeto.getTime()) ||
+    Number(mes) < 1 || Number(mes) > 12 ||
+    Number(dia) < 1 || Number(dia) > 31 ||
+    Number(ano) < 1900 || Number(ano) > anoAtual
+  ) {
+    return res.status(400).json({
+      valido: false,
+      erro: 'Data de nascimento inexistente ou inválida.'
+    });
+  }
+
+  // Retorna no formato YYYY-MM-DD
+  const dataFormatada = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+
+  return res.json({
+    valido: true,
+    dataNascimentoTratada: dataFormatada
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor do Bot rodando na porta ${PORT}`);
