@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const axios = require('axios');
 app.use(express.json());
 
 // ======================================================
@@ -145,6 +145,39 @@ app.post('/validar-data-nascimento', (req, res) => {
   return res.json({
     valido: true,
     dataNascimentoTratada: dataFormatada
+  });
+});
+
+// ======================================================
+// ETAPA 5: Consultar Cidade na API Crefaz
+// ======================================================
+app.post('/tratar-cidade', (req, res) => {
+  const { uf, cidade } = req.body;
+
+  if (!cidade) {
+    return res.status(400).json({ 
+      valido: false, 
+      erro: 'Informe a cidade para tratamento.' 
+    });
+  }
+
+  // 1. Remove espaços desnecessários nas pontas
+  const cidadeLimpa = cidade.toString().trim();
+  const ufTratada = uf ? uf.toString().trim().toUpperCase() : '';
+
+  // 2. Codifica caracteres especiais e acentos para formato web (URL)
+  // Ex: "São Paulo" -> "S%C3%A3o%20Paulo"
+  const cidadeEncoded = encodeURIComponent(cidadeLimpa);
+
+  // 3. Monta o trecho de query string já pronto para concatenar na sua API futura
+  const queryParam = `city=${cidadeEncoded}${ufTratada ? `&uf=${ufTratada}` : ''}`;
+
+  return res.json({
+    valido: true,
+    cidadeOriginal: cidadeLimpa,
+    uf: ufTratada,
+    cidadeTratada: cidadeEncoded, // Valor tratado para salvar em variável no bot
+    queryParamPronto: queryParam   // Ex: city=S%C3%A3o%20Paulo&uf=SP
   });
 });
 
